@@ -43,7 +43,7 @@ def _load_keys() -> list[str]:
 API_KEYS   = _load_keys()
 _key_index = 0        # index key đang dùng
 
-MODEL      = "gemini-3.8-flash"
+MODEL      = "gemini-3.5-flash-lite"
 RAW_FILE   = "full_raw_564_chapters.txt"
 JSON_FILE  = "chapters.json"
 BATCH_SIZE = 2       # chương mỗi API call
@@ -189,6 +189,7 @@ def translate_batch(
         "generationConfig": {
             "temperature": 0.3,
             "maxOutputTokens": 8192,
+            "responseMimeType": "application/json"
         }
     }
 
@@ -222,7 +223,12 @@ def translate_batch(
                 text = re.sub(r'^```[^\n]*\n', '', text)
                 text = re.sub(r'\n```$', '', text.rstrip())
 
-            return json.loads(text)
+            try:
+                return json.loads(text)
+            except json.JSONDecodeError:
+                # Fallback: clean invalid escape sequences often produced by LLM
+                cleaned = re.sub(r'\\(?![/"\\bfnrtu])', r'\\\\', text)
+                return json.loads(cleaned)
 
         except json.JSONDecodeError as e:
             print(f"  ❌ JSON parse lỗi: {e}")
