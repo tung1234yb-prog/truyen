@@ -74,10 +74,53 @@ def translate_batch(batch: list[tuple[int, str, str]]) -> list[dict] | None:
     prompt = f"""Bạn là dịch giả chuyên nghiệp dòng truyện đô thị cao võ / tiên hiệp Trung Quốc.
 Hãy dịch {len(batch)} chương sau từ tiếng Trung sang tiếng Việt.
 
-Yêu cầu dịch thuật:
-- Giữ nguyên tên Hán Việt: Thẩm Trường An, Trấn Dạ Ti, Hắc Viêm, Thanh Châu Nhất Trung, Bệ Ngạn (碑岸/八谔), Đan Hoằng Nghị (单弘毅), v.v.
+## BẢNG THUẬT NGỮ BẮT BUỘC (phải dùng chính xác, nhất quán)
+
+### Nhân vật chính:
+- 沈长安 → Thẩm Trường An
+- 许明镜 → Hứa Minh Cảnh
+- 顾敛 → Cố Liễm
+- 单弘毅 → Đan Hoằng Nghị
+- 杜月 → Đỗ Nguyệt
+- 鹿清 → Lộc Thanh
+- 向情 → Hướng Tình
+- 安暖 → An Noãn
+- 吕南 → Lữ Nam
+- 宋之薇 → Tống Chi Vi
+- 史远 → Sử Viễn
+- 卓怀山 → Trác Hoài Sơn
+- 裴昭 → Bùi Chiếu
+- 方纪明 → Phương Ký Minh
+- 冯烈 → Bằng Liệt
+- 纪思 → Kỷ Tư
+- 李悦 → Lý Duyệt
+- 张海 → Trương Hải
+- 朱崇 → Chu Sùng
+- 白崇 → Bạch Sùng
+
+### Tổ chức / Địa danh TQ:
+- 镇夜司 → Trấn Dạ Ti
+- 魔都 → Ma Đô
+- 京城 → Kinh Thành
+- 东海 → Đông Hải
+- 北冥 → Bắc Minh
+- 黑天鹅 → Hắc Thiên Nga
+- 渊门 → Uyên Môn
+- 大梦 → Đại Mộng
+- 苍古 → Thương Cổ
+
+### Pháp bảo / Kỹ năng:
+- 碑岸 → Bệ Ngạn
+- 黑炎 → Hắc Viêm
+- 神魂 → thần hồn
+- 灵力 → linh lực
+- 武者 → võ giả
+
+## QUY TẮC DỊCH:
+- Địa danh nước ngoài (không phải TQ): GIỮ NGUYÊN tiếng Anh (New York, London, Paris... KHÔNG phiên âm)
+- Tên người nước ngoài: GIỮ NGUYÊN tên gốc (Adam, Victor... KHÔNG phiên âm)
 - Văn phong tự nhiên, lưu loát theo thể loại tiên hiệp Việt
-- Giữ nguyên cấu trúc đoạn văn, không gộp/tách đoạn
+- Giữ nguyên cấu trúc đoạn văn, KHÔNG gộp/tách đoạn
 - KHÔNG thêm lời mở đầu hay giải thích
 
 Trả về JSON hợp lệ, KHÔNG có markdown, theo đúng format:
