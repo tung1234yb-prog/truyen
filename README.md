@@ -1,9 +1,9 @@
 # Hướng Dẫn Tải & Đẩy Trang Đọc Truyện Lên GitHub Pages
 
-Thư mục dự án: `C:\Users\tungl\.gemini\antigravity\scratch\truyen-cao-vo`
+Thư mục dự án: `D:\Code\truyen-cao-vo`
 
 ### 1. Cấu trúc thư mục
-- `index.html`: Giao diện đọc truyện (gồm mục lục, đổi cỡ chữ, đổi theme tối/sáng/giấy cũ, responsive trên điện thoại & máy tính).
+- `index.html`: Giao diện web đọc truyện (gồm mục lục, đổi cỡ chữ, đổi theme tối/sáng/giấy cũ, responsive trên điện thoại & máy tính).
 - `chapters.json`: Danh sách dữ liệu các chương truyện đã dịch sang tiếng Việt.
 - `translator.py`: Tool tự động dịch văn bản tiếng Trung sang tiếng Việt.
 - `add_chapter.py`: Script tự động nối chương mới vào `chapters.json`.
@@ -18,13 +18,10 @@ Thư mục dự án: `C:\Users\tungl\.gemini\antigravity\scratch\truyen-cao-vo`
 3. Chọn chế độ **Public**.
 
 #### Bước 2: Đẩy source code từ máy lên GitHub
-Mở PowerShell tại thư mục `C:\Users\tungl\.gemini\antigravity\scratch\truyen-cao-vo` và chạy các lệnh:
+Mở PowerShell tại thư mục `D:\Code\truyen-cao-vo` và chạy các lệnh:
 
 ```powershell
-cd C:\Users\tungl\.gemini\antigravity\scratch\truyen-cao-vo
-git init
-git add .
-git commit -m "Khoi tao web doc truyen Cao Vo Truong Thuong Hac Viem"
+cd D:\Code\truyen-cao-vo
 git branch -M main
 git remote add origin https://github.com/<tai-khoan-github-cua-ban>/truyen-cao-vo.git
 git push -u origin main
