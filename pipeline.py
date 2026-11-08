@@ -75,7 +75,7 @@ def translate_batch(batch: list[tuple[int, str, str]]) -> list[dict] | None:
 Hãy dịch {len(batch)} chương sau từ tiếng Trung sang tiếng Việt.
 
 Yêu cầu dịch thuật:
-- Giữ nguyên tên Hán Việt: Thẩm Trường An, Trấn Dạ Ti, Hắc Viêm, Thanh Châu Nhất Trung, v.v.
+- Giữ nguyên tên Hán Việt: Thẩm Trường An, Trấn Dạ Ti, Hắc Viêm, Thanh Châu Nhất Trung, Bệ Ngạn (碑岸/八谔), Đan Hoằng Nghị (单弘毅), v.v.
 - Văn phong tự nhiên, lưu loát theo thể loại tiên hiệp Việt
 - Giữ nguyên cấu trúc đoạn văn, không gộp/tách đoạn
 - KHÔNG thêm lời mở đầu hay giải thích
