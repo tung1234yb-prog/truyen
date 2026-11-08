@@ -2,8 +2,9 @@
 full_raw_564_chapters.txt
 raw_chapters/
 
-# Secrets - KHÔNG commit lên GitHub
+# Secrets & Tools - KHÔNG cần cho GitHub Pages
 .env
+pipeline.py
 
 # Python cache
 __pycache__/
