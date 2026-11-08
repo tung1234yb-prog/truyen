@@ -75,9 +75,15 @@ GLOSSARY_PROMPT = """
 ### Pháp bảo / Thuật ngữ:
 碑岸→Bệ Ngạn | 黑炎→Hắc Viêm | 神魂→thần hồn | 灵力→linh lực | 武者→võ giả
 
-## QUY TẮC:
-- Tên / địa danh NƯỚC NGOÀI: Giữ nguyên tiếng Anh (New York, London, Adam, Victor...).
-- Văn phong tự nhiên, giữ nguyên cấu trúc đoạn văn, KHÔNG tự ý tóm tắt hay cắt bớt.
+## QUY CHUẨN VĂN PHONG TIÊN HIỆP / HÁN VIỆT:
+1. ĐẠI TỪ NHÂN XƯNG:
+   - BẮT BUỘC dùng: "Hắn", "Nàng", "Y", "Bọn hắn", "Các ngươi", "Lão giả", "Tiểu tử", "Thanh niên".
+   - TUYỆT ĐỐI KHÔNG dùng văn phong hiện đại đời thường: "cậu ấy", "anh ấy", "cô ấy", "anh ta", "chúng nó".
+2. TỪ VỰNG & KHÍ CHẤT TIÊN HIỆP:
+   - Ưu tiên từ ngữ Hán Việt quen thuộc: "khí cơ", "uy áp", "sâm lãnh", "bàng bạc", "thần sắc", "đồng tử co rụt", "lãnh tiếu", "đột phá", "nghiền ép", "hít sâu một hơi".
+   - Giữ nguyên các thành ngữ 4 chữ Hán Việt: "kinh đào hãi lãng", "sát khí đằng đằng", "phong quyển tàn vân", "hồn phi phách tán".
+3. TÊN / ĐỊA DANH NƯỚC NGOÀI:
+   - Chỉ tên Tây phương mới giữ nguyên tiếng Anh (Adam, Victor, New York...). Tên Trung Quốc phải thuần Hán Việt.
 """
 
 def apply_glossary(text: str) -> str:
@@ -201,11 +207,11 @@ def proofread_step(translated_items: list[dict]) -> list[dict]:
 
     prompt = (
         f"Bạn là tổng biên tập cao cấp truyện tiên hiệp / cao võ Việt Nam.\n"
-        f"Hãy duyệt lại và hoàn thiện bản dịch của {len(translated_items)} chương dưới đây:\n"
-        f"1. Rà soát và loại bỏ triệt để bất kỳ chữ Hán nào còn sót lại.\n"
-        f"2. Đảm bảo tên riêng tuân thủ: Đan Hoằng Nghị, Bệ Ngạn, Thẩm Trường An, Trấn Dạ Ti, Hắc Viêm...\n"
-        f"3. Chuốt lại câu văn cho mượt mà, thuần Việt nhưng vẫn đậm chất kiếm hiệp/cao võ.\n"
-        f"4. Giữ nguyên độ dài và cấu trúc các đoạn văn.\n\n"
+        f"Hãy duyệt lại và hoàn thiện bản dịch của {len(translated_items)} chương dưới đây đạt chuẩn văn phong Hán Việt tiên hiệp hào hùng, mượt mà:\n"
+        f"1. Rà soát và loại bỏ triệt để bất kỳ chữ Hán nào còn sót lại (chuyển hết sang âm Hán Việt chuẩn).\n"
+        f"2. Loại bỏ các từ ngữ hiện đại hóa lệch tông: đổi 'cậu ấy/anh ấy' thành 'hắn/y', 'tức giận' thành 'thần sắc trầm xuống/nổi giận'...\n"
+        f"3. Đảm bảo tên riêng tuân thủ tuyệt đối: Đan Hoằng Nghị (không dùng Đơn Hoằng Nghị), Bệ Ngạn (không dùng Bát Ngạc), Thẩm Trường An, Trấn Dạ Ti, Hắc Viêm...\n"
+        f"4. Giữ nguyên độ dài, tình tiết và cấu trúc phân đoạn của tác giả.\n\n"
         f"Trả về đúng JSON format:\n"
         f'[{{"num": <số>, "vi_title": "<tiêu đề đã chuốt>", "vi_content": "<nội dung đã chuốt>"}}]\n\n'
         f"Bản dịch cần biên tập:\n" + "\n\n".join(sections)
