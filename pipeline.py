@@ -21,7 +21,28 @@ import os
 import requests
 
 # ── Cấu hình ──────────────────────────────────────────────────────────────────
-API_KEY    = os.environ.get("GEMINI_API_KEY", "")
+# Keys được đọc từ file .env (không commit) hoặc env var GEMINI_API_KEYS
+# Format .env:  GEMINI_API_KEYS=key1,key2
+def _load_keys() -> list[str]:
+    # 1. Thử đọc từ .env
+    env_file = os.path.join(os.path.dirname(__file__), ".env")
+    if os.path.exists(env_file):
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("GEMINI_API_KEYS="):
+                    return [k.strip() for k in line[16:].split(",") if k.strip()]
+    # 2. Thử env var
+    env_val = os.environ.get("GEMINI_API_KEYS", "")
+    if env_val:
+        return [k.strip() for k in env_val.split(",") if k.strip()]
+    # 3. Fallback single key
+    single = os.environ.get("GEMINI_API_KEY", "")
+    return [single] if single else []
+
+API_KEYS   = _load_keys()
+_key_index = 0        # index key đang dùng
+
 MODEL      = "gemini-3.8-flash"
 RAW_FILE   = "full_raw_564_chapters.txt"
 JSON_FILE  = "chapters.json"
@@ -40,10 +61,23 @@ GLOSSARY_FIXES = {
 }
 # ──────────────────────────────────────────────────────────────────────────────
 
-GEMINI_URL = (
-    f"https://generativelanguage.googleapis.com/v1beta/models/"
-    f"{MODEL}:generateContent?key={API_KEY}"
+GEMINI_URL_TPL = (
+    "https://generativelanguage.googleapis.com/v1beta/models/"
+    f"{MODEL}:generateContent?key="
 )
+
+def current_key() -> str:
+    return API_KEYS[_key_index % len(API_KEYS)]
+
+def rotate_key(reason: str = "") -> bool:
+    """Chuyển sang key tiếp theo. Trả về False nếu đã thử hết."""
+    global _key_index
+    next_idx = _key_index + 1
+    if next_idx >= len(API_KEYS):
+        return False   # hết key
+    _key_index = next_idx
+    print(f"  🔄 Chuyển sang key {_key_index + 1}/{len(API_KEYS)}" + (f" ({reason})" if reason else ""))
+    return True
 
 # ── Bảng thuật ngữ nhúng vào prompt ───────────────────────────────────────────
 GLOSSARY_PROMPT = """
@@ -158,29 +192,52 @@ def translate_batch(
         }
     }
 
-    try:
-        resp = requests.post(GEMINI_URL, json=payload, timeout=180)
-        resp.raise_for_status()
-        raw_resp = resp.json()
-        text = raw_resp["candidates"][0]["content"]["parts"][0]["text"].strip()
+    for attempt in range(len(API_KEYS) * 2):   # thử tối đa 2 vòng qua hết keys
+        url = GEMINI_URL_TPL + current_key()
+        try:
+            resp = requests.post(url, json=payload, timeout=180)
 
-        # Bóc JSON khỏi markdown nếu có
-        if text.startswith("```"):
-            text = re.sub(r'^```[^\n]*\n', '', text)
-            text = re.sub(r'\n```$', '', text.rstrip())
+            # Hết quota key hiện tại → đổi key
+            if resp.status_code == 429:
+                print(f"\n  ⚠️  Key {_key_index + 1} hết quota (429)", end="")
+                if rotate_key("429"):
+                    time.sleep(1)
+                    continue
+                else:
+                    print(" — Hết tất cả key!")
+                    return None
 
-        return json.loads(text)
+            # Server quá tải → thử lại cùng key sau vài giây
+            if resp.status_code == 503:
+                print(f"\n  ⏳ Server 503, chờ 10s...", end="")
+                time.sleep(10)
+                continue
 
-    except json.JSONDecodeError as e:
-        print(f"  ❌ JSON parse lỗi: {e}")
-        if 'text' in locals():
-            print(f"     Tail: ...{text[-300:]}")
-        return None
-    except (requests.RequestException, KeyError) as e:
-        print(f"  ❌ Lỗi API: {e}")
-        if hasattr(e, 'response') and e.response is not None:
-            print(f"     Response: {e.response.text[:400]}")
-        return None
+            resp.raise_for_status()
+            raw_resp = resp.json()
+            text = raw_resp["candidates"][0]["content"]["parts"][0]["text"].strip()
+
+            # Bóc JSON khỏi markdown nếu có
+            if text.startswith("```"):
+                text = re.sub(r'^```[^\n]*\n', '', text)
+                text = re.sub(r'\n```$', '', text.rstrip())
+
+            return json.loads(text)
+
+        except json.JSONDecodeError as e:
+            print(f"  ❌ JSON parse lỗi: {e}")
+            if 'text' in locals():
+                print(f"     Tail: ...{text[-300:]}")
+            return None
+        except requests.RequestException as e:
+            print(f"  ❌ Lỗi request: {e}")
+            if rotate_key("lỗi request"):
+                time.sleep(2)
+                continue
+            return None
+
+    print("  ❌ Đã thử hết key và retry, bỏ qua.")
+    return None
 
 
 def save_chapter_entry(
@@ -217,7 +274,7 @@ def main():
     existing = load_existing(JSON_FILE)
     existing_nums = {int(c["id"].replace("chuong-", "")) for c in existing}
     print(f"   Đã dịch: {len(existing_nums)} chương")
-    print(f"   Model: {MODEL}")
+    print(f"   Model: {MODEL} | {len(API_KEYS)} API key(s) | Quota ≈ {len(API_KEYS)*500} RPD")
 
     # Xác định range cần dịch
     if len(args) >= 2:

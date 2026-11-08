@@ -1,0 +1,10 @@
+# Raw files - quá lớn để commit
+full_raw_564_chapters.txt
+raw_chapters/
+
+# Secrets - KHÔNG commit lên GitHub
+.env
+
+# Python cache
+__pycache__/
+*.pyc
