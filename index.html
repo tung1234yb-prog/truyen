@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cao Võ: Trường Thương Hắc Viêm Trấn Yêu Ma</title>
+    <title>Thư Viện Truyện Dịch</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -53,6 +53,103 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        /* ============ Home ============ */
+        .home-view {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        .home-topbar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+
+        .home-header {
+            margin-bottom: 32px;
+        }
+
+        .home-header h1 {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .home-header p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .book-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .book-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .book-card h2 {
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 1.35;
+            margin: 10px 0 8px;
+        }
+
+        .book-card .author {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .book-card .desc {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .book-card .meta {
+            margin-top: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .book-card .meta span:last-child {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* ============ Reader ============ */
+        .reader-view {
             display: flex;
             min-height: 100vh;
         }
@@ -143,6 +240,14 @@
             background: var(--accent);
             color: white;
             font-weight: 600;
+        }
+
+        .empty-note {
+            padding: 24px 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            text-align: center;
         }
 
         /* Main Content */
@@ -271,73 +376,216 @@
             .reader-title {
                 font-size: 22px;
             }
+            .home-view {
+                padding: 28px 16px 60px;
+            }
+            .home-header h1 {
+                font-size: 26px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside id="sidebar">
-        <div class="novel-header">
-            <span class="badge">Đô Thị Cao Võ</span>
-            <h1>Cao Võ: Trường Thương Hắc Viêm Trấn Yêu Ma</h1>
-            <p>Tác giả: Nam Tường Hạ Đích Hắc Miêu</p>
+    <!-- ============ Home View ============ -->
+    <div class="home-view" id="homeView">
+        <div class="home-topbar">
+            <button onclick="setTheme('dark')">🌙 Tối</button>
+            <button onclick="setTheme('sepia')">📜 Giấy</button>
+            <button onclick="setTheme('light')">☀️ Sáng</button>
         </div>
-        <div class="chapter-search">
-            <input type="text" id="searchInput" placeholder="Tìm số chương hoặc tên..." oninput="filterChapters()">
+        <div class="home-header">
+            <h1>Thư Viện Truyện Dịch</h1>
+            <p>Chọn một bộ truyện để bắt đầu đọc</p>
         </div>
-        <ul class="chapter-list" id="chapterList"></ul>
-    </aside>
+        <div class="book-grid" id="bookGrid">
+            <div class="empty-note">Đang tải danh sách truyện...</div>
+        </div>
+    </div>
 
-    <!-- Main -->
-    <main>
-        <div class="top-nav">
-            <div class="btn-group">
-                <button class="menu-toggle" onclick="toggleSidebar()">☰ Mục lục</button>
-                <button onclick="changeFontSize(-1)">A-</button>
-                <button onclick="changeFontSize(1)">A+</button>
+    <!-- ============ Reader View ============ -->
+    <div class="reader-view" id="readerView" style="display:none">
+        <aside id="sidebar">
+            <div class="novel-header">
+                <span class="badge" id="bookTag">Truyện</span>
+                <h1 id="bookTitle">Đang tải...</h1>
+                <p id="bookAuthor"></p>
             </div>
-            <div class="btn-group">
-                <button onclick="setTheme('dark')">🌙 Tối</button>
-                <button onclick="setTheme('sepia')">📜 Giấy</button>
-                <button onclick="setTheme('light')">☀️ Sáng</button>
+            <div class="chapter-search">
+                <input type="text" id="searchInput" placeholder="Tìm số chương hoặc tên..." oninput="filterChapters()">
             </div>
-        </div>
+            <ul class="chapter-list" id="chapterList"></ul>
+        </aside>
 
-        <div class="reader-container">
-            <h2 class="reader-title" id="chapterTitle">Đang tải...</h2>
-            <div class="reader-meta" id="chapterMeta">Đang chuẩn bị dữ liệu</div>
-            <div class="reader-body" id="chapterContent"></div>
-
-            <div class="reader-nav">
-                <button id="prevBtn" onclick="prevChapter()">← Chương trước</button>
-                <button id="nextBtn" onclick="nextChapter()">Chương sau →</button>
+        <main>
+            <div class="top-nav">
+                <div class="btn-group">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰ Mục lục</button>
+                    <button onclick="goHome()">← Đổi truyện</button>
+                    <button onclick="changeFontSize(-1)">A-</button>
+                    <button onclick="changeFontSize(1)">A+</button>
+                </div>
+                <div class="btn-group">
+                    <button onclick="setTheme('dark')">🌙 Tối</button>
+                    <button onclick="setTheme('sepia')">📜 Giấy</button>
+                    <button onclick="setTheme('light')">☀️ Sáng</button>
+                </div>
             </div>
-        </div>
-    </main>
+
+            <div class="reader-container">
+                <h2 class="reader-title" id="chapterTitle">Đang tải...</h2>
+                <div class="reader-meta" id="chapterMeta">Đang chuẩn bị dữ liệu</div>
+                <div class="reader-body" id="chapterContent"></div>
+
+                <div class="reader-nav">
+                    <button id="prevBtn" onclick="prevChapter()">← Chương trước</button>
+                    <button id="nextBtn" onclick="nextChapter()">Chương sau →</button>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
+        const SITE_TITLE = 'Thư Viện Truyện Dịch';
+        const bookCache = {};
+
+        let books = [];
+        let currentBook = null;
         let chapters = [];
         let currentChapterIndex = 0;
 
-        async function init() {
-            try {
-                const res = await fetch('chapters.json');
-                chapters = await res.json();
-                renderChapterList();
-                
-                // Get chapter from URL hash or default 0
-                const hash = window.location.hash.replace('#', '');
-                const targetIdx = chapters.findIndex(c => c.id === hash);
-                loadChapter(targetIdx !== -1 ? targetIdx : 0);
-            } catch (e) {
-                document.getElementById('chapterTitle').innerText = "Không thể tải danh sách chương";
-                document.getElementById('chapterContent').innerHTML = "<p>Vui lòng đảm bảo file <code>chapters.json</code> tồn tại.</p>";
+        /* ---------- Routing ---------- */
+        function parseHash() {
+            const raw = window.location.hash.replace(/^#\/?/, '');
+            const parts = raw.split('/').filter(Boolean).map(decodeURIComponent);
+            if (parts[0] === 'book' && parts[1]) {
+                return { bookId: parts[1], chapterId: parts[2] || null };
             }
+            return null;
+        }
+
+        function goHome() {
+            window.location.hash = '#/';
+        }
+
+        async function handleRoute() {
+            const route = parseHash();
+            if (!route) {
+                showHome();
+                return;
+            }
+            if (!currentBook || currentBook.id !== route.bookId) {
+                await openBook(route.bookId, route.chapterId);
+            } else if (route.chapterId) {
+                const idx = chapters.findIndex(c => c.id === route.chapterId);
+                if (idx !== -1 && idx !== currentChapterIndex) loadChapter(idx, false);
+            }
+        }
+
+        /* ---------- Home ---------- */
+        async function loadBooks() {
+            try {
+                const res = await fetch('books.json', { cache: 'no-cache' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                books = await res.json();
+                renderBookGrid();
+            } catch (e) {
+                document.getElementById('bookGrid').innerHTML =
+                    '<div class="empty-note">Không thể tải <code>books.json</code>. Vui lòng kiểm tra lại.</div>';
+            }
+        }
+
+        function renderBookGrid() {
+            const grid = document.getElementById('bookGrid');
+            if (!books.length) {
+                grid.innerHTML = '<div class="empty-note">Chưa có truyện nào.</div>';
+                return;
+            }
+            grid.innerHTML = '';
+            books.forEach(book => {
+                const card = document.createElement('div');
+                card.className = 'book-card';
+                const count = book.chapterCount ? book.chapterCount + ' chương' : 'Đang cập nhật';
+                card.innerHTML = `
+                    <span class="badge">${escapeHtml(book.tag || 'Truyện')}</span>
+                    <h2>${escapeHtml(book.title)}</h2>
+                    <div class="author">Tác giả: ${escapeHtml(book.author || 'Không rõ')}</div>
+                    <div class="desc">${escapeHtml(book.description || '')}</div>
+                    <div class="meta"><span>${escapeHtml(book.latestChapter || '')}</span><span>${count}</span></div>
+                `;
+                card.onclick = () => {
+                    window.location.hash = `#/book/${encodeURIComponent(book.id)}`;
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        function showHome() {
+            currentBook = null;
+            chapters = [];
+            document.getElementById('readerView').style.display = 'none';
+            document.getElementById('homeView').style.display = 'block';
+            document.title = SITE_TITLE;
+            window.scrollTo({ top: 0 });
+        }
+
+        /* ---------- Reader ---------- */
+        async function openBook(bookId, chapterId) {
+            const meta = books.find(b => b.id === bookId);
+            if (!meta) {
+                goHome();
+                return;
+            }
+            try {
+                if (!bookCache[bookId]) {
+                    const res = await fetch(meta.path, { cache: 'no-cache' });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    bookCache[bookId] = await res.json();
+                }
+            } catch (e) {
+                showHome();
+                alert('Không thể tải dữ liệu truyện: ' + meta.title);
+                return;
+            }
+
+            currentBook = meta;
+            chapters = bookCache[bookId] || [];
+            currentChapterIndex = 0;
+
+            document.getElementById('homeView').style.display = 'none';
+            document.getElementById('readerView').style.display = 'flex';
+
+            document.getElementById('bookTag').innerText = meta.tag || 'Truyện';
+            document.getElementById('bookTitle').innerText = meta.title;
+            document.getElementById('bookAuthor').innerText = 'Tác giả: ' + (meta.author || 'Không rõ');
+            document.title = meta.title;
+
+            renderChapterList();
+
+            if (!chapters.length) {
+                document.getElementById('chapterTitle').innerText = meta.title;
+                document.getElementById('chapterMeta').innerText = 'Truyện đang được cập nhật';
+                document.getElementById('chapterContent').innerHTML =
+                    '<p style="text-align:center;color:var(--text-muted)">Chưa có chương nào. Vui lòng quay lại sau.</p>';
+                document.getElementById('prevBtn').disabled = true;
+                document.getElementById('nextBtn').disabled = true;
+                return;
+            }
+
+            let target = 0;
+            if (chapterId) {
+                const found = chapters.findIndex(c => c.id === chapterId);
+                if (found !== -1) target = found;
+            }
+            loadChapter(target, false);
         }
 
         function renderChapterList() {
             const list = document.getElementById('chapterList');
             list.innerHTML = '';
+            if (!chapters.length) {
+                list.innerHTML = '<div class="empty-note">Chưa có chương nào.</div>';
+                return;
+            }
             chapters.forEach((chap, idx) => {
                 const li = document.createElement('li');
                 li.className = `chapter-item ${idx === currentChapterIndex ? 'active' : ''}`;
@@ -354,27 +602,31 @@
             const query = document.getElementById('searchInput').value.toLowerCase();
             const items = document.querySelectorAll('.chapter-item');
             items.forEach((item, idx) => {
-                const text = chapters[idx].title.toLowerCase();
+                const text = (chapters[idx] && chapters[idx].title || '').toLowerCase();
                 item.style.display = text.includes(query) ? 'flex' : 'none';
             });
         }
 
-        function loadChapter(idx) {
+        function loadChapter(idx, updateHash = true) {
             if (idx < 0 || idx >= chapters.length) return;
             currentChapterIndex = idx;
             const chap = chapters[idx];
-            
-            window.location.hash = chap.id;
+
+            if (updateHash) {
+                window.location.hash = `#/book/${encodeURIComponent(currentBook.id)}/${encodeURIComponent(chap.id)}`;
+            }
+            document.title = chap.title + ' - ' + currentBook.title;
             document.getElementById('chapterTitle').innerText = chap.title;
-            document.getElementById('chapterMeta').innerText = `Chương ${chap.chapterNumber || (idx + 1)} / ${chapters.length} • Nhân vật chính: Thẩm Trường An`;
 
-            const paras = chap.content.split('\n\n').filter(p => p.trim());
-            document.getElementById('chapterContent').innerHTML = paras.map(p => `<p>${p}</p>`).join('');
+            const metaParts = [`Chương ${chap.chapterNumber || (idx + 1)} / ${chapters.length}`];
+            if (currentBook.protagonist) metaParts.push('Nhân vật chính: ' + currentBook.protagonist);
+            document.getElementById('chapterMeta').innerText = metaParts.join(' • ');
 
-            // Scroll to top
+            const paras = String(chap.content || '').split('\n\n').filter(p => p.trim());
+            document.getElementById('chapterContent').innerHTML = paras.map(p => `<p>${escapeHtml(p)}</p>`).join('');
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // Update UI
             document.querySelectorAll('.chapter-item').forEach((el, i) => {
                 el.classList.toggle('active', i === idx);
             });
@@ -395,6 +647,15 @@
             document.getElementById('sidebar').classList.toggle('open');
         }
 
+        /* ---------- Utilities ---------- */
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('novel_theme', theme);
@@ -407,13 +668,17 @@
             localStorage.setItem('novel_font_size', fontSize);
         }
 
-        // Restore settings
-        const savedTheme = localStorage.getItem('novel_theme');
-        if (savedTheme) setTheme(savedTheme);
-        const savedFontSize = localStorage.getItem('novel_font_size');
-        if (savedFontSize) changeFontSize(parseInt(savedFontSize) - fontSize);
+        /* ---------- Init ---------- */
+        (async function init() {
+            const savedTheme = localStorage.getItem('novel_theme');
+            if (savedTheme) setTheme(savedTheme);
+            const savedFontSize = localStorage.getItem('novel_font_size');
+            if (savedFontSize) changeFontSize(parseInt(savedFontSize) - fontSize);
 
-        init();
+            await loadBooks();
+            await handleRoute();
+            window.addEventListener('hashchange', handleRoute);
+        })();
     </script>
 </body>
 </html>
